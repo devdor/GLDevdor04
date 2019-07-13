@@ -41,17 +41,12 @@ private:
     // Cube mesh
     unsigned int m_cubeVAO = 0;
     unsigned int m_cubeVBO = 0;
-
-    // 1x1 quad in NDC
-    unsigned int m_quadVAO = 0;
-    unsigned int m_quadVBO;
-
+    
     // textures
     CTexture2D m_texFloor, m_texBlue, m_texRed;
     
-    void RenderSceneInternal(CSceneUpdateArgs &args, const CShader &shader, const int renderPass);
+    void RenderCommonObjects(CSceneUpdateArgs &args, const CShader &shader);
     void RenderCube();
-    void RenderQuad();
 
     CMesh m_mesh;
 
@@ -68,6 +63,6 @@ private:
     void InitMetaballsVertexBuffer();
 	void UpdateMetaballsVertexBuffer();
 	void CalculateMetaballs(CSceneUpdateArgs &args);
-    void RenderMetaballs(CSceneUpdateArgs &args, const int renderPass);	
+    void RenderMetaballs(CSceneUpdateArgs &args, const CShader &shader);	
 };
 #endif

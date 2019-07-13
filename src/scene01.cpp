@@ -39,11 +39,7 @@ void CScene01::Init(CSceneInitArgs &args)
 
     this->m_simpleDepthShader.Init(
         CFileSystem::GetPath("res/shaders/shadow_mapping_depth.vs").c_str(),
-        CFileSystem::GetPath("res/shaders/shadow_mapping_depth.fs").c_str());
-
-    this->m_debugDepthQuad.Init(
-        CFileSystem::GetPath("res/shaders/debug_quad.vs").c_str(),
-        CFileSystem::GetPath("res/shaders/debug_quad_depth.fs").c_str());
+        CFileSystem::GetPath("res/shaders/shadow_mapping_depth.fs").c_str());    
 
     // load textures
     this->m_texFloor = CUtil::LoadTextureFromFile(
@@ -123,9 +119,7 @@ void CScene01::SetGlStates()
     // shader configuration
     m_shader.Use();
     m_shader.SetInt("diffuseTexture", 0);
-    m_shader.SetInt("shadowMap", 1);
-    m_debugDepthQuad.Use();
-    m_debugDepthQuad.SetInt("depthMap", 0);
+    m_shader.SetInt("shadowMap", 1);    
 }
 
 void CScene01::Render(CSceneUpdateArgs &args)
@@ -156,7 +150,8 @@ void CScene01::Render(CSceneUpdateArgs &args)
     glBindFramebuffer(GL_FRAMEBUFFER, this->m_depthMapFBO);
     glClear(GL_DEPTH_BUFFER_BIT);
     
-    this->RenderSceneInternal(args, m_simpleDepthShader, 0);
+    this->RenderCommonObjects(args, m_simpleDepthShader);
+    this->RenderMetaballs(args, m_simpleDepthShader);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     // reset viewport
@@ -179,14 +174,24 @@ void CScene01::Render(CSceneUpdateArgs &args)
     
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, this->m_depthMap);
-    this->RenderSceneInternal(args, m_shader, 1);
+    this->RenderCommonObjects(args, m_shader);
 
-    // render Depth map to quad for visual debugging
-    m_debugDepthQuad.Use();
-    m_debugDepthQuad.SetFloat("near_plane", near_plane);
-    m_debugDepthQuad.SetFloat("far_plane", far_plane);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, this->m_depthMap);    
+    // Switch to reflect shader
+    /*
+    this->m_shaderCubeMapReflect.Use();
+    this->m_shaderCubeMapReflect.SetMat4("view", view);
+    this->m_shaderCubeMapReflect.SetMat4("projection", projection);
+    this->m_shaderCubeMapReflect.SetVec3("cameraPos", m_camUtil.GetEyePosition());
+
+    glm::mat4 model;
+    model = glm::mat4();
+    model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
+    model = glm::scale(model, glm::vec3(1.15f));
+    
+    this->m_shaderCubeMapReflect.SetMat4("model", model);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, this->m_texCubeMap.ID);
+*/
+    this->RenderMetaballs(args, m_shader);
 }
 
 void CScene01::Update(CSceneUpdateArgs &args)
@@ -202,7 +207,7 @@ void CScene01::Release()
     glDeleteBuffers(1, &this->m_planeVBO);
 }
 
-void CScene01::RenderSceneInternal(CSceneUpdateArgs &args, const CShader &shader, const int renderPass)
+void CScene01::RenderCommonObjects(CSceneUpdateArgs &args, const CShader &shader)
 {   
     // floor
     glm::mat4 model = glm::mat4(1.0f);
@@ -256,8 +261,6 @@ void CScene01::RenderSceneInternal(CSceneUpdateArgs &args, const CShader &shader
     model = glm::translate(model, glm::vec3(-2.0f, 0.0f, -6.0f));
     model = glm::scale(model, glm::vec3(0.2f));
     shader.SetMat4("model", model);
-    
-    this->RenderMetaballs(args, renderPass);
 }
 
 void CScene01::RenderCube()
@@ -332,64 +335,12 @@ void CScene01::RenderCube()
     glBindVertexArray(0);
 }
 
-void CScene01::RenderQuad()
-{
-    if (this->m_quadVAO == 0)
-    {
-        float quadVertices[] =
-        {
-            // positions        // texture Coords
-            -1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
-            -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
-            1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
-            1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
-        };
-        // setup plane VAO
-        glGenVertexArrays(1, &this->m_quadVAO);
-        glGenBuffers(1, &this->m_quadVBO);
-        glBindVertexArray(this->m_quadVAO);
-        glBindBuffer(GL_ARRAY_BUFFER, this->m_quadVBO);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-        glEnableVertexAttribArray(1);
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-    }
-    glBindVertexArray(this->m_quadVAO);
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-    glBindVertexArray(0);
-}
+void CScene01::RenderMetaballs(CSceneUpdateArgs &args, const CShader &shader)
+{    
+    //glBindTexture(GL_TEXTURE_CUBE_MAP, this->m_texCubeMap.ID);
+    //this->m_texCubeMap.Activate();
+    this->m_texBlue.Activate();
 
-void CScene01::RenderMetaballs(CSceneUpdateArgs &args, const int renderPass)
-{
-    if(renderPass == 1)
-    {/*
-        // Camera
-        glm::vec3 camPos = this->m_camUtil.GetEyePosition();
-        glm::vec3 camLookAt = this->m_camUtil.GetLookAtPosition();
-
-        // Create camera transformations
-        glm::mat4 view = this->m_camUtil.GetViewMatrix();
-        glm::mat4 projection = this->m_camUtil.GetProjectionMatrix();
-
-        this->m_shaderCubeMapReflect.Use();
-        this->m_shaderCubeMapReflect.SetMat4("view", view);
-        this->m_shaderCubeMapReflect.SetMat4("projection", projection);
-        this->m_shaderCubeMapReflect.SetVec3("cameraPos", camPos);
-        this->m_shaderCubeMapReflect.SetFloat("alphaValue", 1.0f);
-
-        glm::mat4 model;
-        model = glm::mat4();
-        model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
-        model = glm::scale(model, glm::vec3(1.15f));
-        
-        this->m_shaderCubeMapReflect.SetMat4("model", model);
-        glBindTexture(GL_TEXTURE_CUBE_MAP, this->m_texCubeMap.ID);
-        this->m_texCubeMap.Activate(GL_TEXTURE0);*/
-
-        this->m_texBlue.Activate();
-    }
-    
 	glBindVertexArray(this->m_vaoMetaballs);
 	glDrawArrays(GL_TRIANGLES, 0, this->m_MetaballVertices.size());
 	glBindVertexArray(0);
