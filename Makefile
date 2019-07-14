@@ -35,9 +35,9 @@ OBJDIR_RELEASE = obj/Release
 DEP_RELEASE = 
 OUT_RELEASE = bin/Release/GLDevdor04
 
-OBJ_DEBUG = $(OBJDIR_DEBUG)/src/util.o $(OBJDIR_DEBUG)/src/spline3d/splinegl.o $(OBJDIR_DEBUG)/src/spline3d/interpol_spline.o $(OBJDIR_DEBUG)/src/spline3d/interpol_non_fonct.o $(OBJDIR_DEBUG)/src/spline3d/interpol3d.o $(OBJDIR_DEBUG)/src/spline3d/interpol.o $(OBJDIR_DEBUG)/src/metaballs/champ.o $(OBJDIR_DEBUG)/src/metaballs/metaball.o $(OBJDIR_DEBUG)/src/main.o $(OBJDIR_DEBUG)/src/glad.o $(OBJDIR_DEBUG)/src/camera_util.o $(OBJDIR_DEBUG)/src/camera.o $(OBJDIR_DEBUG)/src/base_scene.o $(OBJDIR_DEBUG)/src/scene01.o $(OBJDIR_DEBUG)/src/text_layer.o $(OBJDIR_DEBUG)/src/wave_func.o $(OBJDIR_DEBUG)/src/texture_base.o $(OBJDIR_DEBUG)/src/texture2d.o $(OBJDIR_DEBUG)/src/texture_cube_map.o
+OBJ_DEBUG = $(OBJDIR_DEBUG)/src/util.o $(OBJDIR_DEBUG)/src/spline3d/splinegl.o $(OBJDIR_DEBUG)/src/spline3d/interpol_spline.o $(OBJDIR_DEBUG)/src/spline3d/interpol_non_fonct.o $(OBJDIR_DEBUG)/src/spline3d/interpol3d.o $(OBJDIR_DEBUG)/src/spline3d/interpol.o $(OBJDIR_DEBUG)/src/metaballs/champ.o $(OBJDIR_DEBUG)/src/metaballs/metaball.o $(OBJDIR_DEBUG)/src/main.o $(OBJDIR_DEBUG)/src/glad.o $(OBJDIR_DEBUG)/src/camera_util.o $(OBJDIR_DEBUG)/src/camera.o $(OBJDIR_DEBUG)/src/base_scene.o $(OBJDIR_DEBUG)/src/scene01.o $(OBJDIR_DEBUG)/src/scene02.o $(OBJDIR_DEBUG)/src/text_layer.o $(OBJDIR_DEBUG)/src/wave_func.o $(OBJDIR_DEBUG)/src/texture_base.o $(OBJDIR_DEBUG)/src/texture2d.o $(OBJDIR_DEBUG)/src/texture_cube_map.o
 
-OBJ_RELEASE = $(OBJDIR_RELEASE)/src/util.o $(OBJDIR_RELEASE)/src/spline3d/splinegl.o $(OBJDIR_RELEASE)/src/spline3d/interpol_spline.o $(OBJDIR_RELEASE)/src/spline3d/interpol_non_fonct.o $(OBJDIR_RELEASE)/src/spline3d/interpol3d.o $(OBJDIR_RELEASE)/src/spline3d/interpol.o $(OBJDIR_RELEASE)/src/metaballs/champ.o $(OBJDIR_RELEASE)/src/metaballs/metaball.o $(OBJDIR_RELEASE)/src/main.o $(OBJDIR_RELEASE)/src/glad.o $(OBJDIR_RELEASE)/src/camera_util.o $(OBJDIR_RELEASE)/src/camera.o $(OBJDIR_RELEASE)/src/base_scene.o $(OBJDIR_RELEASE)/src/scene01.o $(OBJDIR_RELEASE)/src/text_layer.o $(OBJDIR_RELEASE)/src/wave_func.o $(OBJDIR_RELEASE)/src/texture_base.o $(OBJDIR_RELEASE)/src/texture2d.o $(OBJDIR_RELEASE)/src/texture_cube_map.o
+OBJ_RELEASE = $(OBJDIR_RELEASE)/src/util.o $(OBJDIR_RELEASE)/src/spline3d/splinegl.o $(OBJDIR_RELEASE)/src/spline3d/interpol_spline.o $(OBJDIR_RELEASE)/src/spline3d/interpol_non_fonct.o $(OBJDIR_RELEASE)/src/spline3d/interpol3d.o $(OBJDIR_RELEASE)/src/spline3d/interpol.o $(OBJDIR_RELEASE)/src/metaballs/champ.o $(OBJDIR_RELEASE)/src/metaballs/metaball.o $(OBJDIR_RELEASE)/src/main.o $(OBJDIR_RELEASE)/src/glad.o $(OBJDIR_RELEASE)/src/camera_util.o $(OBJDIR_RELEASE)/src/camera.o $(OBJDIR_RELEASE)/src/base_scene.o $(OBJDIR_RELEASE)/src/scene01.o $(OBJDIR_RELEASE)/src/scene02.o $(OBJDIR_RELEASE)/src/text_layer.o $(OBJDIR_RELEASE)/src/wave_func.o $(OBJDIR_RELEASE)/src/texture_base.o $(OBJDIR_RELEASE)/src/texture2d.o $(OBJDIR_RELEASE)/src/texture_cube_map.o
 
 all: debug release
 
@@ -112,6 +112,9 @@ $(OBJDIR_DEBUG)/src/base_scene.o: src/base_scene.cpp
 
 $(OBJDIR_DEBUG)/src/scene01.o: src/scene01.cpp
 	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/scene01.cpp -o $(OBJDIR_DEBUG)/src/scene01.o
+
+$(OBJDIR_DEBUG)/src/scene02.o: src/scene02.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/scene02.cpp -o $(OBJDIR_DEBUG)/src/scene02.o
 
 clean_debug: 
 	rm -f $(OBJ_DEBUG) $(OUT_DEBUG)
@@ -189,6 +192,9 @@ $(OBJDIR_RELEASE)/src/base_scene.o: src/base_scene.cpp
 
 $(OBJDIR_RELEASE)/src/scene01.o: src/scene01.cpp
 	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/scene01.cpp -o $(OBJDIR_RELEASE)/src/scene01.o
+
+$(OBJDIR_RELEASE)/src/scene02.o: src/scene02.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/scene02.cpp -o $(OBJDIR_RELEASE)/src/scene02.o
 
 clean_release: 
 	rm -f $(OBJ_RELEASE) $(OUT_RELEASE)
