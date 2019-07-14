@@ -116,11 +116,11 @@ int main()
     }
 
     // opengl scene
-    CScene01 sc01;
+    CScene01 curScene;
     CSceneInitArgs scArgs = CSceneInitArgs(
         CScreenSettings(SCR_WIDTH, SCR_HPPEIGHT));
     
-    sc01.Init(scArgs);    
+    curScene.Init(scArgs);    
     
     // textlayer
     CTextLayer textLayer;
@@ -144,11 +144,11 @@ int main()
         processInput(window);
 
         // update scene
-        sc01.Update(updArgs);
+        curScene.Update(updArgs);
 
         // render scene
-        sc01.SetGlStates();
-        sc01.Render(updArgs);
+        curScene.SetGlStates();
+        curScene.Render(updArgs);
 
         // render textlayer
         std::stringstream debugMsg;
