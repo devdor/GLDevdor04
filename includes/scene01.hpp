@@ -60,7 +60,6 @@ private:
     void InitMetaballsVertexBuffer();
 	void UpdateMetaballsVertexBuffer();
 	void CalculateMetaballs(CSceneUpdateArgs &args);
-    void RenderMetaballs(CSceneUpdateArgs &args, const CShader &shader);	
-    unsigned int LoadCubemap(std::vector<std::string> faces);
+    void RenderMetaballs(CSceneUpdateArgs &args, const CShader &shader);
 };
 #endif
