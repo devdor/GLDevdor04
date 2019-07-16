@@ -201,6 +201,7 @@ clean_release:
 	rm -rf bin/Release
 	rm -rf $(OBJDIR_RELEASE)/src
 	rm -rf $(OBJDIR_RELEASE)/src/spline3d
+	rm -rf $(OBJDIR_RELEASE)/src/metaballs
 
 .PHONY: before_debug after_debug clean_debug before_release after_release clean_release
 
