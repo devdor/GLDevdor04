@@ -23,8 +23,6 @@ public:
     void Release();
 
 private:
-    const unsigned int SHADOW_WIDTH = 1024, SHADOW_HPPEIGHT = 1024;
-
     // shader
     CShader m_shader, m_simpleDepthShader, m_debugDepthQuad;
 
@@ -44,6 +42,7 @@ private:
     
     // textures
     CTexture2D m_texFloor, m_texBlue, m_texRed;
+    CTextureCubeMap m_texCubeMap;
     
     void RenderCommonObjects(CSceneUpdateArgs &args, const CShader &shader);
     void RenderCube();
@@ -57,12 +56,11 @@ private:
 	std::vector<Vertex> m_MetaballVertices;
 
     CShader m_shaderCubeMapReflect;
-	CTextureCubeMap m_texCubeMap;
-
 
     void InitMetaballsVertexBuffer();
 	void UpdateMetaballsVertexBuffer();
 	void CalculateMetaballs(CSceneUpdateArgs &args);
     void RenderMetaballs(CSceneUpdateArgs &args, const CShader &shader);	
+    unsigned int LoadCubemap(std::vector<std::string> faces);
 };
 #endif

@@ -34,10 +34,9 @@ public:
     {
         return this->m_lastFrame;
     }
-
 private:
     float m_currentFrame = 0.0f;
     float m_deltaTime = 0.0f;
-    float m_lastFrame = 0.0f;
+    float m_lastFrame = 0.0f;    
 };
 #endif

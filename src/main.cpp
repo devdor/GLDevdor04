@@ -17,6 +17,7 @@
 #include "../includes/util.hpp"
 #include "../includes/shader.hpp"
 #include "../includes/scene01.hpp"
+#include "../includes/scene02.hpp"
 #include "../includes/scene_init_args.hpp"
 #include "../includes/scene_update_args.hpp"
 #include "../includes/text_layer.hpp"

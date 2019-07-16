@@ -19,9 +19,5 @@ public:
     void Render(CSceneUpdateArgs &args);
     void Update(CSceneUpdateArgs &args);
     void Release();
-
-private:
-    
-    void RenderCommonObjects(CSceneUpdateArgs &args, const CShader &shader);    
 };
 #endif

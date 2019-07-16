@@ -1,4 +1,5 @@
 #include "../includes/scene01.hpp"
+#include "stb_image.hpp"
 
 CScene01::CScene01()
     :CBaseScene()
@@ -34,8 +35,8 @@ void CScene01::Init(CSceneInitArgs &args)
         CFileSystem::GetPath("res/shaders/shadow_mapping.fs").c_str());
 
     this->m_shaderCubeMapReflect.Init(
-        CFileSystem::GetPath("res/shaders/cube_map_reflect.vs").c_str(),
-        CFileSystem::GetPath("res/shaders/cube_map_reflect.fs").c_str());
+        CFileSystem::GetPath("res/shaders/cubemaps.vs").c_str(),
+        CFileSystem::GetPath("res/shaders/cubemaps.fs").c_str());
 
     this->m_simpleDepthShader.Init(
         CFileSystem::GetPath("res/shaders/shadow_mapping_depth.vs").c_str(),
@@ -52,15 +53,15 @@ void CScene01::Init(CSceneInitArgs &args)
         CFileSystem::GetPath("res/img/space_blue.png").c_str());    
 
     std::vector<std::string> textureList;
+
     textureList.clear();
     textureList.push_back(CFileSystem::GetPath("res/img/cube01/slice_1_2.png").c_str());
     textureList.push_back(CFileSystem::GetPath("res/img/cube01/slice_1_0.png").c_str());
     textureList.push_back(CFileSystem::GetPath("res/img/cube01/slice_0_0.png").c_str());
     textureList.push_back(CFileSystem::GetPath("res/img/cube01/slice_2_0.png").c_str());
     textureList.push_back(CFileSystem::GetPath("res/img/cube01/slice_1_1.png").c_str());
-    textureList.push_back(CFileSystem::GetPath("res/img/cube01/slice_1_3.png").c_str());
-	this->m_texCubeMap = CUtil::LoadCubeMapFromFile(textureList);
-
+    textureList.push_back(CFileSystem::GetPath("res/img/cube01/slice_1_3.png").c_str());	
+    this->m_texCubeMap = CUtil::LoadCubeMapFromFile(textureList);
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     float planeVertices[] =
@@ -176,22 +177,15 @@ void CScene01::Render(CSceneUpdateArgs &args)
     glBindTexture(GL_TEXTURE_2D, this->m_depthMap);
     this->RenderCommonObjects(args, m_shader);
 
-    // Switch to reflect shader
-    /*
+    // Switch to CubeMap shader
     this->m_shaderCubeMapReflect.Use();
     this->m_shaderCubeMapReflect.SetMat4("view", view);
     this->m_shaderCubeMapReflect.SetMat4("projection", projection);
     this->m_shaderCubeMapReflect.SetVec3("cameraPos", m_camUtil.GetEyePosition());
 
-    glm::mat4 model;
-    model = glm::mat4();
-    model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
-    model = glm::scale(model, glm::vec3(1.15f));
-    
-    this->m_shaderCubeMapReflect.SetMat4("model", model);
+    glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_CUBE_MAP, this->m_texCubeMap.ID);
-*/
-    this->RenderMetaballs(args, m_shader);
+    this->RenderMetaballs(args, this->m_shaderCubeMapReflect);
 }
 
 void CScene01::Update(CSceneUpdateArgs &args)
@@ -336,11 +330,12 @@ void CScene01::RenderCube()
 }
 
 void CScene01::RenderMetaballs(CSceneUpdateArgs &args, const CShader &shader)
-{    
-    //glBindTexture(GL_TEXTURE_CUBE_MAP, this->m_texCubeMap.ID);
-    //this->m_texCubeMap.Activate();
-    this->m_texBlue.Activate();
-
+{
+    glm::mat4 model = glm::mat4(1.0f);
+    model = glm::translate(model, glm::vec3(-2.0f, 1.0f, -3.0));
+    model = glm::scale(model, glm::vec3(0.2f));
+    shader.SetMat4("model", model);
+    
 	glBindVertexArray(this->m_vaoMetaballs);
 	glDrawArrays(GL_TRIANGLES, 0, this->m_MetaballVertices.size());
 	glBindVertexArray(0);
@@ -395,4 +390,35 @@ void CScene01::UpdateMetaballsVertexBuffer()
 {
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, this->m_MetaballVertices.size() * sizeof(Vertex), &this->m_MetaballVertices[0], GL_STATIC_DRAW);
+}
+
+unsigned int CScene01::LoadCubemap(std::vector<std::string> faces)
+{
+    unsigned int textureID;
+    glGenTextures(1, &textureID);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
+
+    int width, height, nrComponents;
+    for (unsigned int i = 0; i < faces.size(); i++)
+    {
+        unsigned char *data = stbi_load(faces[i].c_str(), &width, &height, &nrComponents, 0);
+
+        if (data)
+        {
+            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+            stbi_image_free(data);
+        }
+        else
+        {
+            std::cout << "Cubemap texture failed to load at path: " << faces[i] << std::endl;
+            stbi_image_free(data);
+        }
+    }
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+    return textureID;
 }

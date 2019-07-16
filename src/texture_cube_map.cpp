@@ -27,7 +27,7 @@ void CTextureCubeMap::GenerateTex(GLuint width, GLuint height, GLenum format, st
 	glBindTexture(GL_TEXTURE_CUBE_MAP, this->ID);
 	for (GLuint i = 0; i < data.size(); i++)
 	{
-		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data[i]);
+		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, format, GL_UNSIGNED_BYTE, data[i]);
 	}
 	
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
