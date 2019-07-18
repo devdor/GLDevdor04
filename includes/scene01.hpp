@@ -2,6 +2,7 @@
 #define SCENE01_HPP
 
 #include <vector>
+#include <map>
 #include "metaballs/metaball.hpp"
 #include "metaballs/champ.hpp"
 #include "base_scene.hpp"
@@ -9,6 +10,7 @@
 #include "mesh.hpp"
 #include "texture2d.hpp"
 #include "scene_update_args.hpp"
+#include "particle_emitter.hpp"
 
 class CScene01 : public CBaseScene
 {

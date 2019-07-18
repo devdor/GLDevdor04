@@ -14,14 +14,14 @@ void CScene01::Init(CSceneInitArgs &args)
 {
     // camera
     this->m_camUtil.InitView(args.GetScreenSettings());
-    this->m_camUtil.PathInit(0.02f,
+    this->m_camUtil.PathInit(0.015f,
         CUtil::LoadSpline(CFileSystem::GetPath("res/splines/eye_spline02.txt").c_str()),
         CUtil::LoadSpline(CFileSystem::GetPath("res/splines/look_at_spline02.txt").c_str()));
     this->m_camUtil.PathSetTime(0.0f);
 
     // meshes
     this->m_mesh.Init(
-        CFileSystem::GetPath("res/meshes/ico_sphere.obj_").c_str());
+        CFileSystem::GetPath("res/meshes/mesh01.obj").c_str());
 
     // metaballs
 	this->m_champ = new CChamp();
@@ -120,7 +120,7 @@ void CScene01::SetGlStates()
     // shader configuration
     m_shader.Use();
     m_shader.SetInt("diffuseTexture", 0);
-    m_shader.SetInt("shadowMap", 1);    
+    m_shader.SetInt("shadowMap", 1);
 }
 
 void CScene01::Render(CSceneUpdateArgs &args)
@@ -129,14 +129,14 @@ void CScene01::Render(CSceneUpdateArgs &args)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // change light position over time
-    m_lightPos.x = sin(args.GetCurrentFrame()) * 3.0f;
-    m_lightPos.z = cos(args.GetCurrentFrame()) * 2.0f;
-    m_lightPos.y = 8.0 + cos(args.GetCurrentFrame()) * 1.0f;    
+    m_lightPos.x = sin(args.GetCurrentFrame()) / 2.0f;
+    m_lightPos.z = cos(args.GetCurrentFrame()) / 2.0f;
+    m_lightPos.y = 18.0;    
 
     // 1. render depth of scene to texture (from light's perspective)
     glm::mat4 lightProjection, lightView;
     glm::mat4 lightSpaceMatrix;
-    float near_plane = 1.0f, far_plane = 16.0f;
+    float near_plane = 1.0f, far_plane = 20.0f;
 
     //lightProjection = glm::perspective(glm::radians(45.0f), (GLfloat)SHADOW_WIDTH / (GLfloat)SHADOW_HPPEIGHT, near_plane, far_plane); // note that if you use a perspective projection matrix you'll have to change the light position as the current light position isn't enough to reflect the whole scene
     lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
@@ -211,9 +211,9 @@ void CScene01::RenderCommonObjects(CSceneUpdateArgs &args, const CShader &shader
     this->m_texFloor.Activate();
     glDrawArrays(GL_TRIANGLES, 0, 6);
     this->m_texFloor.UnBind();
-
+    
     // rotate one cube
-    float radius = 5.0f;
+    float radius = 6.0f;
     float posX = sin(args.GetCurrentFrame() / 4) * radius;
     float posZ = cos(args.GetCurrentFrame() / 4) * radius;
 
@@ -221,7 +221,8 @@ void CScene01::RenderCommonObjects(CSceneUpdateArgs &args, const CShader &shader
     this->m_texBlue.Activate();
 
     model = glm::mat4(1.0f);
-    model = glm::translate(model, glm::vec3(posX, 0.2f, posZ));
+    model = glm::translate(model, glm::vec3(posX, 0.3f, posZ));
+    model = glm::rotate(model, args.GetCurrentFrame() / 2.0f, glm::normalize(glm::vec3(0.0, 1.0, 0.0)));
     model = glm::scale(model, glm::vec3(0.5f));
     shader.SetMat4("model", model);
     this->RenderCube();
@@ -233,8 +234,9 @@ void CScene01::RenderCommonObjects(CSceneUpdateArgs &args, const CShader &shader
     this->RenderCube();
 
     model = glm::mat4(1.0f);
-    model = glm::translate(model, glm::vec3(-1.0f, 0.0f, 2.0));
+    model = glm::translate(model, glm::vec3(-posX, 2.0f, -posZ));
     model = glm::rotate(model, glm::radians(60.0f), glm::normalize(glm::vec3(1.0, 0.0, 1.0)));
+    model = glm::rotate(model, args.GetCurrentFrame() / 2.0f, glm::normalize(glm::vec3(1.0, 0.4, 0.2)));
     model = glm::scale(model, glm::vec3(0.25));
     shader.SetMat4("model", model);
     this->RenderCube();
@@ -242,19 +244,15 @@ void CScene01::RenderCommonObjects(CSceneUpdateArgs &args, const CShader &shader
 
     // mesh
     model = glm::mat4(1.0f);
-    model = glm::translate(model, glm::vec3(-2.0f, 1.5f, 0.0f));
-    model = glm::scale(model, glm::vec3(1.2f));
+    model = glm::translate(model, glm::vec3(-3.0f, 2.0f, 0.0f));
+    model = glm::rotate(model, args.GetCurrentFrame() / 2.0f, glm::normalize(glm::vec3(0.0, 1.0, 0.2)));
+    model = glm::scale(model, glm::vec3(2.0f));
+    
     shader.SetMat4("model", model);
 
     this->m_texRed.Activate();
     this->m_mesh.Render();
     this->m_texRed.UnBind();
-
-    // metaballs
-    model = glm::mat4(1.0f);
-    model = glm::translate(model, glm::vec3(-2.0f, 0.0f, -6.0f));
-    model = glm::scale(model, glm::vec3(0.2f));
-    shader.SetMat4("model", model);
 }
 
 void CScene01::RenderCube()

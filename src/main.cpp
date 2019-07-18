@@ -122,7 +122,8 @@ int main()
         CScreenSettings(SCR_WIDTH, SCR_HPPEIGHT));
     
     curScene.Init(scArgs);    
-    
+    curScene.SetGlStates();
+
     // textlayer
     CTextLayer textLayer;
     textLayer.Init(scArgs);
