@@ -20,7 +20,7 @@ void CScene01::Init(CSceneInitArgs &args)
     this->m_camUtil.PathSetTime(0.0f);
 
     // meshes
-    this->m_mesh.Init(
+    this->m_importMesh.Init(
         CFileSystem::GetPath("res/meshes/mesh01.obj").c_str());
 
     // metaballs
@@ -63,32 +63,10 @@ void CScene01::Init(CSceneInitArgs &args)
     textureList.push_back(CFileSystem::GetPath("res/img/cube01/slice_1_3.png").c_str());	
     this->m_texCubeMap = CUtil::LoadCubeMapFromFile(textureList);
 
-    // set up vertex data (and buffer(s)) and configure vertex attributes
-    float planeVertices[] =
-    {
-        // positions            // normals         // texcoords
-        25.0f, -0.5f,  25.0f,  0.0f, 1.0f, 0.0f,  25.0f,  0.0f,
-        -25.0f, -0.5f,  25.0f,  0.0f, 1.0f, 0.0f,   0.0f,  0.0f,
-        -25.0f, -0.5f, -25.0f,  0.0f, 1.0f, 0.0f,   0.0f, 25.0f,
-
-        25.0f, -0.5f,  25.0f,  0.0f, 1.0f, 0.0f,  25.0f,  0.0f,
-        -25.0f, -0.5f, -25.0f,  0.0f, 1.0f, 0.0f,   0.0f, 25.0f,
-        25.0f, -0.5f, -25.0f,  0.0f, 1.0f, 0.0f,  25.0f, 25.0f
-    };
-
-    // plane VAO
-    glGenVertexArrays(1, &this->m_planeVAO);
-    glGenBuffers(1, &this->m_planeVBO);
-    glBindVertexArray(this->m_planeVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, this->m_planeVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(planeVertices), planeVertices, GL_STATIC_DRAW);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(2);
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-    glBindVertexArray(0);    
+    
+    // meshes
+    this->m_planeMesh.Init();
+    this->m_cubeMesh.Init();
 
     // configure depth map FBO    
     glGenFramebuffers(1, &this->m_depthMapFBO);
@@ -197,8 +175,8 @@ void CScene01::Update(CSceneUpdateArgs &args)
 
 void CScene01::Release()
 {
-    glDeleteVertexArrays(1, &this->m_planeVAO);
-    glDeleteBuffers(1, &this->m_planeVBO);
+    this->m_planeMesh.Release();
+    this->m_cubeMesh.Release();
 }
 
 void CScene01::RenderCommonObjects(CSceneUpdateArgs &args, const CShader &shader)
@@ -206,10 +184,9 @@ void CScene01::RenderCommonObjects(CSceneUpdateArgs &args, const CShader &shader
     // floor
     glm::mat4 model = glm::mat4(1.0f);
     shader.SetMat4("model", model);
-    glBindVertexArray(this->m_planeVAO);
-
+    
     this->m_texFloor.Activate();
-    glDrawArrays(GL_TRIANGLES, 0, 6);
+    this->m_planeMesh.Render();
     this->m_texFloor.UnBind();
     
     // rotate one cube
@@ -225,13 +202,13 @@ void CScene01::RenderCommonObjects(CSceneUpdateArgs &args, const CShader &shader
     model = glm::rotate(model, args.GetCurrentFrame() / 2.0f, glm::normalize(glm::vec3(0.0, 1.0, 0.0)));
     model = glm::scale(model, glm::vec3(0.5f));
     shader.SetMat4("model", model);
-    this->RenderCube();
+    this->m_cubeMesh.Render();
 
     model = glm::mat4(1.0f);
     model = glm::translate(model, glm::vec3(2.0f, 0.0f, 1.0));
     model = glm::scale(model, glm::vec3(0.5f));
     shader.SetMat4("model", model);
-    this->RenderCube();
+    this->m_cubeMesh.Render();
 
     model = glm::mat4(1.0f);
     model = glm::translate(model, glm::vec3(-posX, 2.0f, -posZ));
@@ -239,7 +216,7 @@ void CScene01::RenderCommonObjects(CSceneUpdateArgs &args, const CShader &shader
     model = glm::rotate(model, args.GetCurrentFrame() / 2.0f, glm::normalize(glm::vec3(1.0, 0.4, 0.2)));
     model = glm::scale(model, glm::vec3(0.25));
     shader.SetMat4("model", model);
-    this->RenderCube();
+    this->m_cubeMesh.Render();
     this->m_texBlue.UnBind();
 
     // mesh
@@ -251,80 +228,8 @@ void CScene01::RenderCommonObjects(CSceneUpdateArgs &args, const CShader &shader
     shader.SetMat4("model", model);
 
     this->m_texRed.Activate();
-    this->m_mesh.Render();
+    this->m_importMesh.Render();
     this->m_texRed.UnBind();
-}
-
-void CScene01::RenderCube()
-{
-    // initialize (if necessary)
-    if (this->m_cubeVAO == 0)
-    {
-        float vertices[] =
-        {
-            // back face
-            -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f, // bottom-left
-            1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f, // top-right
-            1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 0.0f, // bottom-right
-            1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f, // top-right
-            -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f, // bottom-left
-            -1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 1.0f, // top-left
-            // front face
-            -1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f, // bottom-left
-            1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 0.0f, // bottom-right
-            1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f, // top-right
-            1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f, // top-right
-            -1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 1.0f, // top-left
-            -1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f, // bottom-left
-            // left face
-            -1.0f,  1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-right
-            -1.0f,  1.0f, -1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 1.0f, // top-left
-            -1.0f, -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-left
-            -1.0f, -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-left
-            -1.0f, -1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 0.0f, // bottom-right
-            -1.0f,  1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-right
-            // right face
-            1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-left
-            1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-right
-            1.0f,  1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 1.0f, // top-right
-            1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-right
-            1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-left
-            1.0f, -1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 0.0f, // bottom-left
-            // bottom face
-            -1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 1.0f, // top-right
-            1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 1.0f, // top-left
-            1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f, // bottom-left
-            1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f, // bottom-left
-            -1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 0.0f, // bottom-right
-            -1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 1.0f, // top-right
-            // top face
-            -1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f, // top-left
-            1.0f,  1.0f, 1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 0.0f,  // bottom-right
-            1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 1.0f, // top-right
-            1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 0.0f, // bottom-right
-            -1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f, // top-left
-            -1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 0.0f  // bottom-left
-        };
-        glGenVertexArrays(1, &this->m_cubeVAO);
-        glGenBuffers(1, &this->m_cubeVBO);
-        // fill buffer
-        glBindBuffer(GL_ARRAY_BUFFER, this->m_cubeVBO);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-        // link vertex attributes
-        glBindVertexArray(m_cubeVAO);
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-        glEnableVertexAttribArray(1);
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-        glEnableVertexAttribArray(2);
-        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        glBindVertexArray(0);
-    }
-    // render Cube
-    glBindVertexArray(this->m_cubeVAO);
-    glDrawArrays(GL_TRIANGLES, 0, 36);
-    glBindVertexArray(0);
 }
 
 void CScene01::RenderMetaballs(CSceneUpdateArgs &args, const CShader &shader)

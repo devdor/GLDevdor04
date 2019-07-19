@@ -28,36 +28,32 @@ struct Vertex {
 	glm::vec2 TexCoords;
 };
 
-class CMesh {
+class CImportMesh {
 
 public:
 	/*  Mesh Data  */
 	std::vector<Vertex> vertices;
-	std::vector<GLuint> indices;
+	std::vector<GLuint> indices;	
 
-	void Release()
+	CImportMesh() 
 	{
 	}
 
-	CMesh() 
-	{
-	}
-
-	CMesh(const CMesh &mesh)
+	CImportMesh(const CImportMesh &mesh)
 	{
 		this->vertices = mesh.vertices;
 		this->indices = mesh.indices;
 		this->SetupMesh();
 	}
 
-	CMesh(std::vector<Vertex> vertices, std::vector<GLuint> indices)
+	CImportMesh(std::vector<Vertex> vertices, std::vector<GLuint> indices)
 	{
 		this->vertices = vertices;
 		this->indices = indices;
 
 		this->SetupMesh();
 	}
-
+	
 	void Init(std::string path)
 	{
 		// Read file via ASSIMP
@@ -130,6 +126,12 @@ public:
 		glBindVertexArray(this->VAO);
 		glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(this->indices.size()), GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
+	}
+
+	void Release()
+	{
+		glDeleteVertexArrays(1, &this->VAO);
+    	glDeleteBuffers(1, &VBO);
 	}
 
 	std::vector<Vertex> GetVertices()

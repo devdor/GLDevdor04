@@ -7,7 +7,9 @@
 #include "metaballs/champ.hpp"
 #include "base_scene.hpp"
 #include "util.hpp"
-#include "mesh.hpp"
+#include "import_mesh.hpp"
+#include "cube_mesh.hpp"
+#include "plane_mesh.hpp"
 #include "texture2d.hpp"
 #include "scene_update_args.hpp"
 #include "particle_emitter.hpp"
@@ -34,22 +36,18 @@ private:
     // lights
     glm::vec3 m_lightPos;
 
+    
     // meshes
-    unsigned int m_planeVAO;
-    unsigned int m_planeVBO;
-
-    // Cube mesh
-    unsigned int m_cubeVAO = 0;
-    unsigned int m_cubeVBO = 0;
+    CPlaneMesh m_planeMesh;
+    CCubeMesh m_cubeMesh;
     
     // textures
     CTexture2D m_texFloor, m_texBlue, m_texRed;
     CTextureCubeMap m_texCubeMap;
     
     void RenderCommonObjects(CSceneUpdateArgs &args, const CShader &shader);
-    void RenderCube();
 
-    CMesh m_mesh;
+    CImportMesh m_importMesh;
 
     // Metaballs
     CChamp* m_champ;
