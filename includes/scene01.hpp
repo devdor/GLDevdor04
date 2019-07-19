@@ -14,6 +14,7 @@
 #include "scene_update_args.hpp"
 #include "particle_emitter.hpp"
 #include "metaballs_util.hpp"
+#include "frame_buffer.hpp"
 
 class CScene01 : public CBaseScene
 {
@@ -29,14 +30,13 @@ public:
 
 private:
     // shader
-    CShader m_shader, m_simpleDepthShader, m_debugDepthQuad;
-
-    unsigned int m_depthMapFBO;
-    unsigned int m_depthMap;
+    CShader m_shader, m_simpleDepthShader, m_shaderCubeMapReflect;
+    
+    // framebuffer
+    CFrameBuffer m_frameBuffer;
 
     // lights
     glm::vec3 m_lightPos;
-
     
     // meshes
     CPlaneMesh m_planeMesh;
@@ -46,12 +46,11 @@ private:
     // textures
     CTexture2D m_texFloor, m_texBlue, m_texRed;
     CTextureCubeMap m_texCubeMap;
-    
-    void RenderCommonObjects(CSceneUpdateArgs &args, const CShader &shader);
-
+        
     // metaballs
-    CShader m_shaderCubeMapReflect;    
     CMetaballsUtil m_metaBallsUtil;
     glm::mat4 m_metaBallsModel;    
+
+    void RenderCommonObjects(CSceneUpdateArgs &args, const CShader &shader);
 };
 #endif

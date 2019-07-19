@@ -29,8 +29,7 @@ public:
     {
         return this->m_camUtil.GetScreenHeight();
     }
-protected:
-    const unsigned int SHADOW_WIDTH = 1024, SHADOW_HPPEIGHT = 1024;
+protected:    
     CCameraUtil m_camUtil;
 };
 #endif

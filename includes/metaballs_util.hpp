@@ -33,16 +33,17 @@ class CMetaballsUtil
         void Update(CSceneUpdateArgs &args)
         {
             // Update Positions
-            CMetaball listeMetaballs[NUM_BALLS];
+            CMetaball mballList[NUM_BALLS];
             for (int n = 0; n < NUM_BALLS; n++)
             {
-                listeMetaballs[n].centre.x = 16 + 8 * sin(n + args.GetCurrentFrame() * 0.3);
-                listeMetaballs[n].centre.y = 16 + 8 * cos(2 * n + args.GetCurrentFrame() * 0.5);
-                listeMetaballs[n].centre.z = 16 + 8 * sin(2 * n + args.GetCurrentFrame() * 0.3);
+                mballList[n].UpdateCenter(
+                    16 + 8 * sin(n + args.GetCurrentFrame() * 0.3),
+                    16 + 8 * cos(2 * n + args.GetCurrentFrame() * 0.5),
+                    16 + 8 * sin(2 * n + args.GetCurrentFrame() * 0.3));
             }
 
-            this->m_champ->Calculate((CMetaball *)&listeMetaballs, NUM_BALLS);
-            this->m_champ->TriangleOptimization((CMetaball *)&listeMetaballs, NUM_BALLS, 0.2f);
+            this->m_champ->Calculate((CMetaball *)&mballList, NUM_BALLS);
+            this->m_champ->TriangleOptimization((CMetaball *)&mballList, NUM_BALLS, 0.2f);
 
             // Calculate VertexBuffer
             this->m_metaballVertices.clear();

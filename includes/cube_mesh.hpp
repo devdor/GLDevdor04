@@ -1,7 +1,8 @@
 #ifndef CUBE_MESH_HPP
 #define CUBE_MESH_HPP
 
-class CCubeMesh {
+class CCubeMesh 
+{
 
 public:
     void Init()

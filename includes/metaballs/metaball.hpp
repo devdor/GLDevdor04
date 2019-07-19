@@ -5,13 +5,16 @@
 
 class CMetaball
 {
- public:
-  // constructeur
-  CMetaball();
-  ~CMetaball();
+  public:
+  
+    CMetaball();
+    ~CMetaball();
+  
+    float Compute(glm::vec3 pos);
+    glm::vec3 GetCenter();
+    void UpdateCenter(float x, float y, float z);
 
-  glm::vec3 centre;
-
-  float fonction(glm::vec3 pos);  
+  private:
+    glm::vec3 m_vCenter;
 };
 #endif

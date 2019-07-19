@@ -71,26 +71,8 @@ void CScene01::Init(CSceneInitArgs &args)
     this->m_planeMesh.Init();
     this->m_cubeMesh.Init();
 
-    // configure depth map FBO    
-    glGenFramebuffers(1, &this->m_depthMapFBO);
-
-    // create depth texture    
-    glGenTextures(1, &this->m_depthMap);
-    glBindTexture(GL_TEXTURE_2D, this->m_depthMap);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SHADOW_WIDTH, SHADOW_HPPEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-    float borderColor[] = { 1.0, 1.0, 1.0, 1.0 };
-    glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
-
-    // attach depth texture as FBO's depth buffer
-    glBindFramebuffer(GL_FRAMEBUFFER, this->m_depthMapFBO);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, this->m_depthMap, 0);
-    glDrawBuffer(GL_NONE);
-    glReadBuffer(GL_NONE);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    // Framebuffer
+    this->m_frameBuffer.Init();
 }
 
 void CScene01::SetGlStates()
@@ -128,17 +110,14 @@ void CScene01::Render(CSceneUpdateArgs &args)
     m_simpleDepthShader.Use();
     m_simpleDepthShader.SetMat4("lightSpaceMatrix", lightSpaceMatrix);
 
-    glViewport(0, 0, SHADOW_WIDTH, SHADOW_HPPEIGHT);
-    glBindFramebuffer(GL_FRAMEBUFFER, this->m_depthMapFBO);
-    glClear(GL_DEPTH_BUFFER_BIT);
-    
+    this->m_frameBuffer.Bind();    
     this->RenderCommonObjects(args, m_simpleDepthShader);
 
     // metaballs    
     this->m_simpleDepthShader.SetMat4("model", m_metaBallsModel);
     this->m_metaBallsUtil.Render();
 
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    this->m_frameBuffer.Unbind();    
 
     // reset viewport
     glViewport(0, 0, this->GetScreenWidth(), this->GetScreenHeight());
@@ -158,8 +137,8 @@ void CScene01::Render(CSceneUpdateArgs &args)
     m_shader.SetVec3("lightPos", m_lightPos);
     m_shader.SetMat4("lightSpaceMatrix", lightSpaceMatrix);
     
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, this->m_depthMap);
+    this->m_frameBuffer.Show();
+
     this->RenderCommonObjects(args, m_shader);
 
     // metaballs

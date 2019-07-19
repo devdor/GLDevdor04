@@ -41,7 +41,7 @@ void CChamp::Calculate(CMetaball *liste, int nombre_mb)
 
 		      for (i = 0; i < nombre_mb; i++)
           {
-            champ[x][y][z] += liste[i].fonction(pos);
+            champ[x][y][z] += liste[i].Compute(pos);
           }
         }
 	    }
@@ -121,9 +121,11 @@ void CChamp::TriangleOptimization(CMetaball *liste, int nombre_mb, float valeurR
     {
 		bool trouveSurface=false;
 		
-		cx=(int)liste[n].centre.x;
-		cy=(int)liste[n].centre.y;
-		cz=(int)liste[n].centre.z;
+    glm::vec3 center = liste[n].GetCenter();
+
+		cx=(int)center.x;
+		cy=(int)center.y;
+		cz=(int)center.z;
 		
 		while (!trouveSurface && cx < TAILLE_CHAMP)
 		{
