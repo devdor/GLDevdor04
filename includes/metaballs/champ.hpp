@@ -29,6 +29,6 @@ class CChamp
   std::vector<CCubeCoord> cubesNonExplores;
   
   bool MarchingCubes(int x, int y, int z, float valeurReference);
-  void AjouteVoisins(int x, int y, int z);
+  void AddNeighbors(int x, int y, int z);
 };
 #endif

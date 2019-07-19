@@ -62,7 +62,7 @@ void CChamp::Calculate(CMetaball *liste, int nombre_mb)
     }
 };  
 
-void CChamp::AjouteVoisins(int x, int y, int z)
+void CChamp::AddNeighbors(int x, int y, int z)
 {
   if (x+1<TAILLE_CHAMP)
     cubesNonExplores.push_back(CCubeCoord(x+1,y,z));
@@ -141,7 +141,7 @@ void CChamp::TriangleOptimization(CMetaball *liste, int nombre_mb, float valeurR
 			}
 		}
 		
-		AjouteVoisins(cx,cy,cz);
+		AddNeighbors(cx,cy,cz);
 		
 		do 
 		{
@@ -153,7 +153,7 @@ void CChamp::TriangleOptimization(CMetaball *liste, int nombre_mb, float valeurR
 				if (MarchingCubes(last.x,last.y,last.z,valeurReference))
 				{
 					cubesNonExplores.pop_back();
-					AjouteVoisins(last.x,last.y,last.z);
+					AddNeighbors(last.x,last.y,last.z);
 				}
 				
 				CubeTraite[last.x][last.y][last.z]=true;
