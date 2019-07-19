@@ -165,6 +165,7 @@ void CScene01::Release()
     this->m_metaBallsUtil.Release();
     this->m_planeMesh.Release();
     this->m_cubeMesh.Release();
+    this->m_frameBuffer.Release();
 }
 
 void CScene01::RenderCommonObjects(CSceneUpdateArgs &args, const CShader &shader)

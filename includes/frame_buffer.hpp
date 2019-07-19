@@ -48,7 +48,11 @@ class CFrameBuffer
             glBindTexture(GL_TEXTURE_2D, this->m_depthMap);
         };
 
-        void Release();
+        void Release()
+        {
+            glDeleteBuffers(1, &this->m_fBO);
+            glDeleteBuffers(1, &this->m_depthMap);
+        };
 
     private:
         unsigned int m_fBO;
