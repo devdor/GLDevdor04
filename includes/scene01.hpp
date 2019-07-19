@@ -13,6 +13,7 @@
 #include "texture2d.hpp"
 #include "scene_update_args.hpp"
 #include "particle_emitter.hpp"
+#include "metaballs_util.hpp"
 
 class CScene01 : public CBaseScene
 {
@@ -40,26 +41,17 @@ private:
     // meshes
     CPlaneMesh m_planeMesh;
     CCubeMesh m_cubeMesh;
-    
+    CImportMesh m_importMesh;
+
     // textures
     CTexture2D m_texFloor, m_texBlue, m_texRed;
     CTextureCubeMap m_texCubeMap;
     
     void RenderCommonObjects(CSceneUpdateArgs &args, const CShader &shader);
 
-    CImportMesh m_importMesh;
-
-    // Metaballs
-    CChamp* m_champ;
-	const static int NUM_BALLS = 16;
-	GLuint VBO, m_vaoMetaballs;
-	std::vector<Vertex> m_MetaballVertices;
-
-    CShader m_shaderCubeMapReflect;
-
-    void InitMetaballsVertexBuffer();
-	void UpdateMetaballsVertexBuffer();
-	void CalculateMetaballs(CSceneUpdateArgs &args);
-    void RenderMetaballs(CSceneUpdateArgs &args, const CShader &shader);
+    // metaballs
+    CShader m_shaderCubeMapReflect;    
+    CMetaballsUtil m_metaBallsUtil;
+    glm::mat4 m_metaBallsModel;    
 };
 #endif

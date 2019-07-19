@@ -24,10 +24,14 @@ void CScene01::Init(CSceneInitArgs &args)
         CFileSystem::GetPath("res/meshes/mesh01.obj").c_str());
 
     // metaballs
-	this->m_champ = new CChamp();
-    CSceneUpdateArgs updArgs = CSceneUpdateArgs(0,0,0);
-	this->CalculateMetaballs(updArgs);
-	this->InitMetaballsVertexBuffer();
+    this->m_metaBallsUtil.Init();
+
+    m_metaBallsModel = glm::mat4(1.0f);
+    m_metaBallsModel = glm::translate(m_metaBallsModel, glm::vec3(-2.0f, 1.0f, -3.0));
+    m_metaBallsModel = glm::scale(m_metaBallsModel, glm::vec3(0.2f));
+
+    CSceneUpdateArgs updArgs = CSceneUpdateArgs(0,0,0);	
+    this->m_metaBallsUtil.Update(updArgs);
 
     // shader
     this->m_shader.Init(
@@ -62,7 +66,6 @@ void CScene01::Init(CSceneInitArgs &args)
     textureList.push_back(CFileSystem::GetPath("res/img/cube01/slice_1_1.png").c_str());
     textureList.push_back(CFileSystem::GetPath("res/img/cube01/slice_1_3.png").c_str());	
     this->m_texCubeMap = CUtil::LoadCubeMapFromFile(textureList);
-
     
     // meshes
     this->m_planeMesh.Init();
@@ -130,7 +133,11 @@ void CScene01::Render(CSceneUpdateArgs &args)
     glClear(GL_DEPTH_BUFFER_BIT);
     
     this->RenderCommonObjects(args, m_simpleDepthShader);
-    this->RenderMetaballs(args, m_simpleDepthShader);
+
+    // metaballs    
+    this->m_simpleDepthShader.SetMat4("model", m_metaBallsModel);
+    this->m_metaBallsUtil.Render();
+
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     // reset viewport
@@ -155,7 +162,7 @@ void CScene01::Render(CSceneUpdateArgs &args)
     glBindTexture(GL_TEXTURE_2D, this->m_depthMap);
     this->RenderCommonObjects(args, m_shader);
 
-    // Switch to CubeMap shader
+    // metaballs
     this->m_shaderCubeMapReflect.Use();
     this->m_shaderCubeMapReflect.SetMat4("view", view);
     this->m_shaderCubeMapReflect.SetMat4("projection", projection);
@@ -163,18 +170,20 @@ void CScene01::Render(CSceneUpdateArgs &args)
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_CUBE_MAP, this->m_texCubeMap.ID);
-    this->RenderMetaballs(args, this->m_shaderCubeMapReflect);
+
+    this->m_shaderCubeMapReflect.SetMat4("model", this->m_metaBallsModel);
+    this->m_metaBallsUtil.Render();
 }
 
 void CScene01::Update(CSceneUpdateArgs &args)
 {
-    this->CalculateMetaballs(args);   
-    this->UpdateMetaballsVertexBuffer();
+    this->m_metaBallsUtil.Update(args);
     m_camUtil.PathInterpolate(args.GetDeltaTime()); 
 }
 
 void CScene01::Release()
 {
+    this->m_metaBallsUtil.Release();
     this->m_planeMesh.Release();
     this->m_cubeMesh.Release();
 }
@@ -230,67 +239,4 @@ void CScene01::RenderCommonObjects(CSceneUpdateArgs &args, const CShader &shader
     this->m_texRed.Activate();
     this->m_importMesh.Render();
     this->m_texRed.UnBind();
-}
-
-void CScene01::RenderMetaballs(CSceneUpdateArgs &args, const CShader &shader)
-{
-    glm::mat4 model = glm::mat4(1.0f);
-    model = glm::translate(model, glm::vec3(-2.0f, 1.0f, -3.0));
-    model = glm::scale(model, glm::vec3(0.2f));
-    shader.SetMat4("model", model);
-    
-	glBindVertexArray(this->m_vaoMetaballs);
-	glDrawArrays(GL_TRIANGLES, 0, this->m_MetaballVertices.size());
-	glBindVertexArray(0);
-}
-
-void CScene01::CalculateMetaballs(CSceneUpdateArgs &args)
-{
-	// Update Positions
-	CMetaball listeMetaballs[NUM_BALLS];
-	for (int n = 0; n < NUM_BALLS; n++)
-	{
-		listeMetaballs[n].centre.x = 16 + 8 * sin(n + args.GetCurrentFrame() * 0.3);
-		listeMetaballs[n].centre.y = 16 + 8 * cos(2 * n + args.GetCurrentFrame() * 0.5);
-		listeMetaballs[n].centre.z = 16 + 8 * sin(2 * n + args.GetCurrentFrame() * 0.3);
-	}
-
-	this->m_champ->Calculate((CMetaball *)&listeMetaballs, NUM_BALLS);
-	this->m_champ->TriangleOptimization((CMetaball *)&listeMetaballs, NUM_BALLS, 0.2f);
-
-	// Calculate VertexBuffer
-	this->m_MetaballVertices.clear();
-	this->m_MetaballVertices.reserve(this->m_champ->nbPoints);
-	for (int i = 0; i < this->m_champ->nbPoints; i++)
-	{
-		Vertex vertex;
-		vertex.Position = this->m_champ->pointsMesh[i];
-		vertex.Normal = this->m_champ->normalesMesh[i];
-		vertex.TexCoords = glm::vec2(0.0f, 0.0f);
-		this->m_MetaballVertices.push_back(vertex);
-	}
-}
-
-void CScene01::InitMetaballsVertexBuffer()
-{
-	glGenVertexArrays(1, &this->m_vaoMetaballs);
-	glGenBuffers(1, &VBO);
-
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, this->m_MetaballVertices.size() * sizeof(Vertex), &this->m_MetaballVertices[0], GL_STATIC_DRAW);
-
-	glBindVertexArray(this->m_vaoMetaballs);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)0);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(6 * sizeof(GLfloat)));
-	glEnableVertexAttribArray(2);
-	glBindVertexArray(0);
-}
-
-void CScene01::UpdateMetaballsVertexBuffer()
-{
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, this->m_MetaballVertices.size() * sizeof(Vertex), &this->m_MetaballVertices[0], GL_STATIC_DRAW);
 }

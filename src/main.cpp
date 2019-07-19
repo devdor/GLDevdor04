@@ -171,6 +171,7 @@ int main()
         calcSleep();
     }
     
+    curScene.Release();
     glfwTerminate();
     return 0;
 }

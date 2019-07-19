@@ -16,17 +16,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include "vertex.hpp"
 #include "shader.hpp"
-
-
-struct Vertex {
-	// Position
-	glm::vec3 Position;
-	// Normal
-	glm::vec3 Normal;
-	// TexCoords
-	glm::vec2 TexCoords;
-};
 
 class CImportMesh {
 
