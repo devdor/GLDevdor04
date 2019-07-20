@@ -1,5 +1,6 @@
 #include "../includes/scene02.hpp"
 #include "stb_image.hpp"
+#include "wave_func.hpp"
 
 CScene02::CScene02()
     :CBaseScene()
@@ -20,6 +21,9 @@ void CScene02::Init(CSceneInitArgs &args)
     this->m_camUtil.PathSetTime(0.0f);
 
     // meshes
+    this->m_importMorphMesh.Init(
+        CFileSystem::GetPath("res/meshes/torus01.obj").c_str());
+
     this->m_importMesh.Init(
         CFileSystem::GetPath("res/meshes/torus01.obj").c_str());
 
@@ -39,6 +43,9 @@ void CScene02::Init(CSceneInitArgs &args)
         CFileSystem::GetPath("res/shaders/shadow_mapping_depth.fs").c_str());    
 
     // load textures
+    this->m_texRed = CUtil::LoadTextureFromFile(
+        CFileSystem::GetPath("res/img/space_red.png").c_str());
+
     this->m_texFloor = CUtil::LoadTextureFromFile(
         CFileSystem::GetPath("res/img/floor01.jpg").c_str());
 
@@ -103,7 +110,7 @@ void CScene02::Render(CSceneUpdateArgs &args)
     torusModel = glm::scale(torusModel, glm::vec3(1.5f));
 
     this->m_simpleDepthShader.SetMat4("model", torusModel);
-    this->m_importMesh.Render();
+    this->m_importMorphMesh.Render();
 
     this->m_frameBuffer.Unbind();    
 
@@ -139,12 +146,12 @@ void CScene02::Render(CSceneUpdateArgs &args)
     glBindTexture(GL_TEXTURE_CUBE_MAP, this->m_texCubeMap.ID);
 
     this->m_shaderCubeMapReflect.SetMat4("model", torusModel);
-    this->m_importMesh.Render();
+    this->m_importMorphMesh.Render();    
 }
 
 void CScene02::Update(CSceneUpdateArgs &args)
 {
-    //**this->m_metaBallsUtil.Update(args);
+    this->WaveFuncObject(this->m_importMorphMesh, args.GetCurrentFrame());
     m_camUtil.PathInterpolate(args.GetDeltaTime()); 
 }
 
@@ -153,6 +160,7 @@ void CScene02::Release()
     this->m_planeMesh.Release();
     this->m_frameBuffer.Release();
     this->m_importMesh.Release();
+    this->m_importMorphMesh.Release();
 }
 
 void CScene02::RenderCommon(CSceneUpdateArgs &args, const CShader &shader)
@@ -164,4 +172,50 @@ void CScene02::RenderCommon(CSceneUpdateArgs &args, const CShader &shader)
     this->m_texFloor.Activate();
     this->m_planeMesh.Render();
     this->m_texFloor.UnBind();
+
+    // rotate one mesh
+    float radius = 4.0f;
+    float posX = sin(args.GetCurrentFrame() / -4) * radius;
+    float posZ = cos(args.GetCurrentFrame() / -4) * radius;
+
+    model = glm::mat4(1.0f);
+    model = glm::translate(model, glm::vec3(posX, 2.0f, posZ));
+    model = glm::rotate(model, glm::radians(60.0f), glm::normalize(glm::vec3(1.0, 0.0, 1.0)));
+    model = glm::rotate(model, args.GetCurrentFrame() / 2.0f, glm::normalize(glm::vec3(1.0, 0.4, 0.2)));
+    model = glm::scale(model, glm::vec3(0.75f));
+    shader.SetMat4("model", model);
+
+    this->m_texRed.Activate();
+    this->m_importMesh.Render();
+    this->m_texRed.UnBind();
+}
+
+void CScene02::WaveFuncObject(CImportMesh &mesh, const float curFrame)
+{
+    CWaveFunc wave;
+	wave.func = FUNC_SIN;   // sine wave function
+	wave.amp = 0.002f;      // amplitude
+	wave.freq = 0.3f;       // cycles/sec
+	wave.phase = 0.1f;      // horizontal shift
+	wave.offset = 0.0f;     // vertical shift
+
+	float waveLength = 1.8f;
+
+	int numVertices = mesh.vertices.size();
+	for (size_t n = 0; n < numVertices; n++)
+    {
+		Vertex srcVertex = mesh.GetVertex(n);
+
+		// compute phase (horizontal shift)
+		wave.phase = (srcVertex.Position.x + srcVertex.Position.y + srcVertex.Position.z) / waveLength;
+		float height = wave.Update(curFrame);
+
+		glm::vec3 tmp = glm::vec3();
+		tmp.x = srcVertex.Position.x + (height * srcVertex.Normal.x);
+		tmp.y = srcVertex.Position.y + (height * srcVertex.Normal.y);
+		tmp.z = srcVertex.Position.z + (height * srcVertex.Normal.z);
+		mesh.UpdateVertex(n, tmp);
+	}
+
+	mesh.UpdateMesh();
 }

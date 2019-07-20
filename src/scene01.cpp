@@ -15,8 +15,8 @@ void CScene01::Init(CSceneInitArgs &args)
     // camera
     this->m_camUtil.InitView(args.GetScreenSettings());
     this->m_camUtil.PathInit(0.015f,
-        CUtil::LoadSpline(CFileSystem::GetPath("res/splines/eye_spline02.txt").c_str()),
-        CUtil::LoadSpline(CFileSystem::GetPath("res/splines/look_at_spline02.txt").c_str()));
+        CUtil::LoadSpline(CFileSystem::GetPath("res/splines/eye_spline01.txt").c_str()),
+        CUtil::LoadSpline(CFileSystem::GetPath("res/splines/look_at_spline01.txt").c_str()));
     this->m_camUtil.PathSetTime(0.0f);
 
     // meshes

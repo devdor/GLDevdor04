@@ -26,6 +26,7 @@ public:
 
 private:
     void RenderCommon(CSceneUpdateArgs &args, const CShader &shader);
+    void WaveFuncObject(CImportMesh &mesh, const float curFrame);
 
     // shader
     CShader m_shader, m_simpleDepthShader, m_shaderCubeMapReflect;
@@ -38,10 +39,10 @@ private:
     
     // meshes
     CPlaneMesh m_planeMesh;
-    CImportMesh m_importMesh;
+    CImportMesh m_importMorphMesh, m_importMesh;
 
     // textures
-    CTexture2D m_texFloor;
+    CTexture2D m_texFloor, m_texRed;
     CTextureCubeMap m_texCubeMap;
 };
 #endif

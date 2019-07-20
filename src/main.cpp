@@ -76,12 +76,6 @@ void calcSleep()
 	frame_start = frame_end;
 }
 
-void SetCurrentScene(int nScene)
-{    
-    sceneList[nScene]->SetGlStates();
-    curScene = nScene;
-}
-
 int main()
 {
     // glfw: initialize and configure
@@ -113,7 +107,7 @@ int main()
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     glfwWindowHint(GLFW_SAMPLES, MSAA_LEVEL);
-
+    
     // tell GLFW to capture our mouse
     if(IS_FULLSCREEN){
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -128,6 +122,9 @@ int main()
         std::cout << "Failed to initialize GLAD" << std::endl;
         return -1;
     }
+
+    // ensure multisample
+    glEnable(GL_MULTISAMPLE);
 
     CSceneInitArgs scArgs = CSceneInitArgs(
         CScreenSettings(SCR_WIDTH, SCR_HPPEIGHT));
@@ -144,9 +141,10 @@ int main()
 	{
 		((*iter).second)->Init(scArgs);
 	};
-        
-    SetCurrentScene(DEFAULT_SCENE);
 
+    curScene = DEFAULT_SCENE;
+    sceneList[curScene]->SetGlStates();
+    
     // render loop
     while (!glfwWindowShouldClose(window))
     {
@@ -211,13 +209,19 @@ void processInput(GLFWwindow *window)
     {
         glfwSetWindowShouldClose(window, true);
     }
-    else if(glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)    
+    else if(glfwGetKey(window, GLFW_KEY_KP_ADD) == GLFW_PRESS)
     {
-        SetCurrentScene(1);
+        if(curScene < sceneList.size()){
+            curScene++;
+            sceneList[curScene]->SetGlStates();
+        }
     }
-    else if(glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS)
+    else if(glfwGetKey(window, GLFW_KEY_KP_SUBTRACT) == GLFW_PRESS)
     {
-        SetCurrentScene(2);
+        if(curScene > 1){
+            curScene--;
+            sceneList[curScene]->SetGlStates();
+        }
     }
 }
 
