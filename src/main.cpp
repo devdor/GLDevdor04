@@ -29,6 +29,8 @@ void processInput(GLFWwindow *window);
 const bool IS_FULLSCREEN = false;
 const unsigned int SCR_WIDTH = 1280;
 const unsigned int SCR_HPPEIGHT = 720;
+const unsigned int MSAA_LEVEL = 4;
+const unsigned int DEFAULT_SCENE = 2;
 
 // timing
 float deltaTime = 0.0f;
@@ -44,7 +46,7 @@ static double target_frame_rate = 60;
 static double frame_start = 0;
 
 uint curScene = 0;
-std::map<std::int32_t, CBaseScene*> sceneList;
+std::map<std::uint32_t, CBaseScene*> sceneList;
 
 void calcFrameRate()
 {
@@ -107,8 +109,10 @@ int main()
         glfwTerminate();
         return -1;
     }
+
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    glfwWindowHint(GLFW_SAMPLES, MSAA_LEVEL);
 
     // tell GLFW to capture our mouse
     if(IS_FULLSCREEN){
@@ -116,7 +120,7 @@ int main()
     }
     else{
         glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
-    }    
+    }
 
     // glad: load all OpenGL function pointers
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -136,12 +140,12 @@ int main()
     sceneList.insert(std::make_pair(1, new CScene01()));
     sceneList.insert(std::make_pair(2, new CScene02()));
 	
-    for (std::map<int, CBaseScene*>::const_iterator iter = sceneList.begin(); iter != sceneList.end(); ++iter)
+    for (std::map<std::uint32_t, CBaseScene*>::const_iterator iter = sceneList.begin(); iter != sceneList.end(); ++iter)
 	{
 		((*iter).second)->Init(scArgs);
 	};
         
-    SetCurrentScene(1);
+    SetCurrentScene(DEFAULT_SCENE);
 
     // render loop
     while (!glfwWindowShouldClose(window))
@@ -190,7 +194,7 @@ int main()
         calcSleep();
     }
     
-    for (std::map<int, CBaseScene*>::const_iterator iter = sceneList.begin(); iter != sceneList.end(); ++iter)
+    for (std::map<std::uint32_t, CBaseScene*>::const_iterator iter = sceneList.begin(); iter != sceneList.end(); ++iter)
 	{
 		((*iter).second)->Release();
         delete (*iter).second;
