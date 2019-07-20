@@ -1,8 +1,6 @@
 #ifndef SCENE01_HPP
 #define SCENE01_HPP
 
-#include <vector>
-#include <map>
 #include "base_scene.hpp"
 #include "util.hpp"
 #include "import_mesh.hpp"
@@ -27,6 +25,8 @@ public:
     void Release();
 
 private:
+    void RenderCommon(CSceneUpdateArgs &args, const CShader &shader);
+
     // shader
     CShader m_shader, m_simpleDepthShader, m_shaderCubeMapReflect;
     
@@ -48,7 +48,5 @@ private:
     // metaballs
     CMetaballsUtil m_metaBallsUtil;
     glm::mat4 m_metaBallsModel;    
-
-    void RenderCommonObjects(CSceneUpdateArgs &args, const CShader &shader);
 };
 #endif

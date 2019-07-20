@@ -1,12 +1,16 @@
 #ifndef SCENE02_HPP
 #define SCENE02_HPP
 
-#include <vector>
 #include "base_scene.hpp"
 #include "util.hpp"
 #include "import_mesh.hpp"
+#include "cube_mesh.hpp"
+#include "plane_mesh.hpp"
 #include "texture2d.hpp"
 #include "scene_update_args.hpp"
+#include "particle_emitter.hpp"
+#include "metaballs_util.hpp"
+#include "frame_buffer.hpp"
 
 class CScene02 : public CBaseScene
 {
@@ -19,5 +23,25 @@ public:
     void Render(CSceneUpdateArgs &args);
     void Update(CSceneUpdateArgs &args);
     void Release();
+
+private:
+    void RenderCommon(CSceneUpdateArgs &args, const CShader &shader);
+
+    // shader
+    CShader m_shader, m_simpleDepthShader, m_shaderCubeMapReflect;
+    
+    // framebuffer
+    CFrameBuffer m_frameBuffer;
+
+    // lights
+    glm::vec3 m_lightPos;
+    
+    // meshes
+    CPlaneMesh m_planeMesh;
+    CImportMesh m_importMesh;
+
+    // textures
+    CTexture2D m_texFloor;
+    CTextureCubeMap m_texCubeMap;
 };
 #endif

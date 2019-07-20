@@ -99,7 +99,6 @@ void CScene01::Render(CSceneUpdateArgs &args)
     glm::mat4 lightSpaceMatrix;
     float near_plane = 1.0f, far_plane = 30.0f;
 
-    //lightProjection = glm::perspective(glm::radians(45.0f), (GLfloat)SHADOW_WIDTH / (GLfloat)SHADOW_HPPEIGHT, near_plane, far_plane); // note that if you use a perspective projection matrix you'll have to change the light position as the current light position isn't enough to reflect the whole scene
     lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
     lightView = glm::lookAt(m_lightPos, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
     lightSpaceMatrix = lightProjection * lightView;
@@ -109,7 +108,7 @@ void CScene01::Render(CSceneUpdateArgs &args)
     m_simpleDepthShader.SetMat4("lightSpaceMatrix", lightSpaceMatrix);
 
     this->m_frameBuffer.Bind();    
-    this->RenderCommonObjects(args, m_simpleDepthShader);
+    this->RenderCommon(args, m_simpleDepthShader);
 
     // metaballs    
     this->m_simpleDepthShader.SetMat4("model", m_metaBallsModel);
@@ -137,7 +136,7 @@ void CScene01::Render(CSceneUpdateArgs &args)
     
     this->m_frameBuffer.Show();
 
-    this->RenderCommonObjects(args, m_shader);
+    this->RenderCommon(args, m_shader);
 
     // metaballs
     this->m_shaderCubeMapReflect.Use();
@@ -164,9 +163,10 @@ void CScene01::Release()
     this->m_planeMesh.Release();
     this->m_cubeMesh.Release();
     this->m_frameBuffer.Release();
+    this->m_importMesh.Release();
 }
 
-void CScene01::RenderCommonObjects(CSceneUpdateArgs &args, const CShader &shader)
+void CScene01::RenderCommon(CSceneUpdateArgs &args, const CShader &shader)
 {   
     // floor
     glm::mat4 model = glm::mat4(1.0f);
