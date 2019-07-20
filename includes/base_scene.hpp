@@ -29,6 +29,12 @@ public:
     {
         return this->m_camUtil.GetScreenHeight();
     }
+
+    virtual void Init(CSceneInitArgs &args);
+    virtual void SetGlStates();
+    virtual void Render(CSceneUpdateArgs &args);
+    virtual void Update(CSceneUpdateArgs &args);
+    virtual void Release();
 protected:    
     CCameraUtil m_camUtil;
 };

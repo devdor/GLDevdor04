@@ -88,9 +88,6 @@ void CScene01::SetGlStates()
 
 void CScene01::Render(CSceneUpdateArgs &args)
 {
-    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
     // change light position over time
     float radius = 13.0f;
     m_lightPos.x = sin(args.GetCurrentFrame() / 3) * radius;

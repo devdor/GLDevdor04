@@ -43,6 +43,9 @@ static double start_time = 0;
 static double target_frame_rate = 60;
 static double frame_start = 0;
 
+uint curScene = 0;
+std::map<std::int32_t, CBaseScene*> sceneList;
+
 void calcFrameRate()
 {
 	frame_count++;
@@ -69,6 +72,12 @@ void calcSleep()
 
 	double frame_end = glfwGetTime();
 	frame_start = frame_end;
+}
+
+void SetCurrentScene(int nScene)
+{    
+    sceneList[nScene]->SetGlStates();
+    curScene = nScene;
 }
 
 int main()
@@ -116,17 +125,23 @@ int main()
         return -1;
     }
 
-    // opengl scene
-    CScene01 curScene;
     CSceneInitArgs scArgs = CSceneInitArgs(
         CScreenSettings(SCR_WIDTH, SCR_HPPEIGHT));
-    
-    curScene.Init(scArgs);    
-    curScene.SetGlStates();
 
     // textlayer
     CTextLayer textLayer;
     textLayer.Init(scArgs);
+
+    // scenes
+    sceneList.insert(std::make_pair(1, new CScene01()));
+    sceneList.insert(std::make_pair(2, new CScene02()));
+	
+    for (std::map<int, CBaseScene*>::const_iterator iter = sceneList.begin(); iter != sceneList.end(); ++iter)
+	{
+		((*iter).second)->Init(scArgs);
+	};
+        
+    SetCurrentScene(1);
 
     // render loop
     while (!glfwWindowShouldClose(window))
@@ -146,17 +161,21 @@ int main()
         processInput(window);
 
         // update scene
-        curScene.Update(updArgs);
+        sceneList[curScene]->Update(updArgs);
 
         // render scene
-        curScene.SetGlStates();
-        curScene.Render(updArgs);
+        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        sceneList[curScene]->Render(updArgs);
 
         // render textlayer
         std::stringstream debugMsg;
 	    debugMsg.setf(std::ios_base::fixed, std::ios_base::floatfield);
 
 	    // Message BottomLeft	
+        debugMsg << "Scene " << curScene;
+        textLayer.RenderText(debugMsg.str(), 5.0f, 36.0f, 0.28f, glm::vec3(0.8, 0.8f, 0.8f));
+
 	    debugMsg << "Frames/s " << current_fps;
         textLayer.RenderText(debugMsg.str(), 5.0f, 22.0f, 0.28f, glm::vec3(0.8, 0.8f, 0.8f));
 
@@ -171,7 +190,12 @@ int main()
         calcSleep();
     }
     
-    curScene.Release();
+    for (std::map<int, CBaseScene*>::const_iterator iter = sceneList.begin(); iter != sceneList.end(); ++iter)
+	{
+		((*iter).second)->Release();
+        delete (*iter).second;
+	};
+
     glfwTerminate();
     return 0;
 }
@@ -180,7 +204,17 @@ int main()
 void processInput(GLFWwindow *window)
 {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+    {
         glfwSetWindowShouldClose(window, true);
+    }
+    else if(glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)    
+    {
+        SetCurrentScene(1);
+    }
+    else if(glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS)
+    {
+        SetCurrentScene(2);
+    }
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
