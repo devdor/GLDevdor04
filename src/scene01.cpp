@@ -92,14 +92,15 @@ void CScene01::Render(CSceneUpdateArgs &args)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // change light position over time
-    m_lightPos.x = sin(args.GetCurrentFrame()) / 2.0f;
-    m_lightPos.z = cos(args.GetCurrentFrame()) / 2.0f;
+    float radius = 13.0f;
+    m_lightPos.x = sin(args.GetCurrentFrame() / 3) * radius;
     m_lightPos.y = 18.0;    
-
+    m_lightPos.z = cos(args.GetCurrentFrame() / 3) * radius;
+    
     // 1. render depth of scene to texture (from light's perspective)
     glm::mat4 lightProjection, lightView;
     glm::mat4 lightSpaceMatrix;
-    float near_plane = 1.0f, far_plane = 20.0f;
+    float near_plane = 1.0f, far_plane = 30.0f;
 
     //lightProjection = glm::perspective(glm::radians(45.0f), (GLfloat)SHADOW_WIDTH / (GLfloat)SHADOW_HPPEIGHT, near_plane, far_plane); // note that if you use a perspective projection matrix you'll have to change the light position as the current light position isn't enough to reflect the whole scene
     lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
@@ -194,7 +195,8 @@ void CScene01::RenderCommonObjects(CSceneUpdateArgs &args, const CShader &shader
     this->m_cubeMesh.Render();
 
     model = glm::mat4(1.0f);
-    model = glm::translate(model, glm::vec3(2.0f, 0.0f, 1.0));
+    model = glm::translate(model, glm::vec3(-2.0f, 0.60f, 3.0));
+    model = glm::rotate(model, args.GetCurrentFrame() / 2.0f, glm::normalize(glm::vec3(1.0, 1.0, 1.0)));
     model = glm::scale(model, glm::vec3(0.5f));
     shader.SetMat4("model", model);
     this->m_cubeMesh.Render();

@@ -1,6 +1,6 @@
 // GLM Mathemtics
 #include <glm/glm.hpp>
-#include "../includes/metaballs/metaball.hpp"
+#include "../includes/metaballs/field.hpp"
 #include "../includes/metaballs/mathlib.hpp"
 
 CMetaball::CMetaball()

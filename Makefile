@@ -39,7 +39,7 @@ OBJ_DEBUG = $(OBJDIR_DEBUG)/src/glad.o $(OBJDIR_DEBUG)/src/util.o $(OBJDIR_DEBUG
 $(OBJDIR_DEBUG)/src/spline3d/splinegl.o $(OBJDIR_DEBUG)/src/spline3d/interpol_spline.o \
 $(OBJDIR_DEBUG)/src/spline3d/interpol_non_fonct.o $(OBJDIR_DEBUG)/src/spline3d/interpol3d.o \
 $(OBJDIR_DEBUG)/src/spline3d/interpol.o \
-$(OBJDIR_DEBUG)/src/metaballs/champ.o $(OBJDIR_DEBUG)/src/metaballs/metaball.o \
+$(OBJDIR_DEBUG)/src/metaballs/field.o $(OBJDIR_DEBUG)/src/metaballs/metaball.o \
 $(OBJDIR_DEBUG)/src/camera_util.o $(OBJDIR_DEBUG)/src/camera.o \
 $(OBJDIR_DEBUG)/src/base_scene.o $(OBJDIR_DEBUG)/src/scene01.o $(OBJDIR_DEBUG)/src/scene02.o \
 $(OBJDIR_DEBUG)/src/text_layer.o $(OBJDIR_DEBUG)/src/wave_func.o $(OBJDIR_DEBUG)/src/texture_base.o \
@@ -50,7 +50,7 @@ OBJ_RELEASE = $(OBJDIR_RELEASE)/src/glad.o $(OBJDIR_RELEASE)/src/util.o $(OBJDIR
 $(OBJDIR_RELEASE)/src/spline3d/splinegl.o $(OBJDIR_RELEASE)/src/spline3d/interpol_spline.o \
 $(OBJDIR_RELEASE)/src/spline3d/interpol_non_fonct.o $(OBJDIR_RELEASE)/src/spline3d/interpol3d.o \
 $(OBJDIR_RELEASE)/src/spline3d/interpol.o \
-$(OBJDIR_RELEASE)/src/metaballs/champ.o $(OBJDIR_RELEASE)/src/metaballs/metaball.o \
+$(OBJDIR_RELEASE)/src/metaballs/field.o $(OBJDIR_RELEASE)/src/metaballs/metaball.o \
 $(OBJDIR_RELEASE)/src/camera_util.o $(OBJDIR_RELEASE)/src/camera.o \
 $(OBJDIR_RELEASE)/src/base_scene.o $(OBJDIR_RELEASE)/src/scene01.o $(OBJDIR_RELEASE)/src/scene02.o \
 $(OBJDIR_RELEASE)/src/text_layer.o $(OBJDIR_RELEASE)/src/wave_func.o $(OBJDIR_RELEASE)/src/texture_base.o \
@@ -95,8 +95,8 @@ $(OBJDIR_DEBUG)/src/spline3d/interpol3d.o: src/spline3d/interpol3d.cpp
 $(OBJDIR_DEBUG)/src/spline3d/interpol.o: src/spline3d/interpol.cpp
 	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/spline3d/interpol.cpp -o $(OBJDIR_DEBUG)/src/spline3d/interpol.o
 
-$(OBJDIR_DEBUG)/src/metaballs/champ.o: src/metaballs/champ.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/metaballs/champ.cpp -o $(OBJDIR_DEBUG)/src/metaballs/champ.o
+$(OBJDIR_DEBUG)/src/metaballs/field.o: src/metaballs/field.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/metaballs/field.cpp -o $(OBJDIR_DEBUG)/src/metaballs/field.o
 
 $(OBJDIR_DEBUG)/src/metaballs/metaball.o: src/metaballs/metaball.cpp
 	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/metaballs/metaball.cpp -o $(OBJDIR_DEBUG)/src/metaballs/metaball.o
@@ -178,8 +178,8 @@ $(OBJDIR_RELEASE)/src/spline3d/interpol3d.o: src/spline3d/interpol3d.cpp
 $(OBJDIR_RELEASE)/src/spline3d/interpol.o: src/spline3d/interpol.cpp
 	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/spline3d/interpol.cpp -o $(OBJDIR_RELEASE)/src/spline3d/interpol.o
 
-$(OBJDIR_RELEASE)/src/metaballs/champ.o: src/metaballs/champ.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/metaballs/champ.cpp -o $(OBJDIR_RELEASE)/src/metaballs/champ.o
+$(OBJDIR_RELEASE)/src/metaballs/field.o: src/metaballs/field.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/metaballs/field.cpp -o $(OBJDIR_RELEASE)/src/metaballs/field.o
 	
 $(OBJDIR_RELEASE)/src/metaballs/metaball.o: src/metaballs/metaball.cpp
 	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/metaballs/metaball.cpp -o $(OBJDIR_RELEASE)/src/metaballs/metaball.o

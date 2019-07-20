@@ -6,14 +6,14 @@
 #include "vertex.hpp"
 #include "scene_update_args.hpp"
 #include "metaballs/metaball.hpp"
-#include "metaballs/champ.hpp"
+#include "metaballs/field.hpp"
 
 class CMetaballsUtil 
 {
     public:
         void Init()
         {
-            this->m_champ = new CChamp();
+            this->m_field = new CField();
             glGenVertexArrays(1, &this->m_vAO);
             glGenBuffers(1, &m_vBO);
 
@@ -42,17 +42,17 @@ class CMetaballsUtil
                     16 + 8 * sin(2 * n + args.GetCurrentFrame() * 0.3));
             }
 
-            this->m_champ->Calculate((CMetaball *)&mballList, NUM_BALLS);
-            this->m_champ->TriangleOptimization((CMetaball *)&mballList, NUM_BALLS, 0.2f);
+            this->m_field->Calculate((CMetaball *)&mballList, NUM_BALLS);
+            this->m_field->TriangleOptimization((CMetaball *)&mballList, NUM_BALLS, 0.2f);
 
             // Calculate VertexBuffer
             this->m_metaballVertices.clear();
-            this->m_metaballVertices.reserve(this->m_champ->nbPoints);
-            for (int i = 0; i < this->m_champ->nbPoints; i++)
+            this->m_metaballVertices.reserve(this->m_field->nbPoints);
+            for (int i = 0; i < this->m_field->nbPoints; i++)
             {
                 Vertex vertex;
-                vertex.Position = this->m_champ->pointsMesh[i];
-                vertex.Normal = this->m_champ->normalesMesh[i];
+                vertex.Position = this->m_field->GetPointMesh(i);
+                vertex.Normal = this->m_field->GetNormalMesh(i);
                 vertex.TexCoords = glm::vec2(0.0f, 0.0f);
                 this->m_metaballVertices.push_back(vertex);
             }
@@ -72,13 +72,13 @@ class CMetaballsUtil
         {
             glDeleteVertexArrays(1, &this->m_vAO);
     	    glDeleteBuffers(1, &m_vBO);
-            delete(this->m_champ);
+            delete(this->m_field);
         };
 
     private:
         const static int NUM_BALLS = 16;
 
-        CChamp* m_champ;        
+        CField* m_field;        
         GLuint m_vBO, m_vAO;
         std::vector<Vertex> m_metaballVertices;
 };

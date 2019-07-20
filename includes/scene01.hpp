@@ -3,8 +3,6 @@
 
 #include <vector>
 #include <map>
-#include "metaballs/metaball.hpp"
-#include "metaballs/champ.hpp"
 #include "base_scene.hpp"
 #include "util.hpp"
 #include "import_mesh.hpp"
