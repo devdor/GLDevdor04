@@ -72,7 +72,7 @@ void CScene01::Init(CSceneInitArgs &args)
     this->m_cubeMesh.Init();
 
     // Framebuffer
-    this->m_frameBuffer.Init();
+    this->m_frameBufferDepth.Init();
 }
 
 void CScene01::SetGlStates()
@@ -107,14 +107,14 @@ void CScene01::Render(CSceneUpdateArgs &args)
     m_simpleDepthShader.Use();
     m_simpleDepthShader.SetMat4("lightSpaceMatrix", lightSpaceMatrix);
 
-    this->m_frameBuffer.Bind();    
+    this->m_frameBufferDepth.Bind();    
     this->RenderCommon(args, m_simpleDepthShader);
 
     // metaballs    
     this->m_simpleDepthShader.SetMat4("model", m_metaBallsModel);
     this->m_metaBallsUtil.Render();
 
-    this->m_frameBuffer.Unbind();    
+    this->m_frameBufferDepth.Unbind();    
 
     // reset viewport
     glViewport(0, 0, this->GetScreenWidth(), this->GetScreenHeight());
@@ -134,7 +134,7 @@ void CScene01::Render(CSceneUpdateArgs &args)
     m_shader.SetVec3("lightPos", m_lightPos);
     m_shader.SetMat4("lightSpaceMatrix", lightSpaceMatrix);
     
-    this->m_frameBuffer.Show();
+    this->m_frameBufferDepth.Show();
 
     this->RenderCommon(args, m_shader);
 
@@ -162,7 +162,7 @@ void CScene01::Release()
     this->m_metaBallsUtil.Release();
     this->m_planeMesh.Release();
     this->m_cubeMesh.Release();
-    this->m_frameBuffer.Release();
+    this->m_frameBufferDepth.Release();
     this->m_importMesh.Release();
 }
 

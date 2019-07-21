@@ -1,7 +1,7 @@
-#ifndef FRAME_BUFFER_HPP
-#define FRAME_BUFFER_HPP
+#ifndef FRAME_BUFFER_DEPTH_HPP
+#define FRAME_BUFFER_DEPTH_HPP
 
-class CFrameBuffer 
+class CFrameBufferDepth 
 {
     public:
         const unsigned int SHADOW_WIDTH = 1024, SHADOW_HPPEIGHT = 1024;

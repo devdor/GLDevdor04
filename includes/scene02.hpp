@@ -10,7 +10,8 @@
 #include "scene_update_args.hpp"
 #include "particle_emitter.hpp"
 #include "metaballs_util.hpp"
-#include "frame_buffer.hpp"
+#include "frame_buffer_depth.hpp"
+#include "frame_buffer_tex.hpp"
 
 class CScene02 : public CBaseScene
 {
@@ -32,14 +33,14 @@ private:
     CShader m_shader, m_simpleDepthShader, m_shaderCubeMapReflect;
     
     // framebuffer
-    CFrameBuffer m_frameBuffer;
+    CFrameBufferDepth m_frameBufferDepth;
 
     // lights
     glm::vec3 m_lightPos;
     
     // meshes
     CPlaneMesh m_planeMesh;
-    CImportMesh m_importMorphMesh, m_importMesh;
+    CImportMesh m_importMesh1, m_importMesh2;
 
     // textures
     CTexture2D m_texFloor, m_texRed;

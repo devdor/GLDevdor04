@@ -21,10 +21,10 @@ void CScene02::Init(CSceneInitArgs &args)
     this->m_camUtil.PathSetTime(0.0f);
 
     // meshes
-    this->m_importMorphMesh.Init(
+    this->m_importMesh1.Init(
         CFileSystem::GetPath("res/meshes/torus01.obj").c_str());
 
-    this->m_importMesh.Init(
+    this->m_importMesh2.Init(
         CFileSystem::GetPath("res/meshes/torus01.obj").c_str());
 
     CSceneUpdateArgs updArgs = CSceneUpdateArgs(0,0,0);
@@ -64,7 +64,7 @@ void CScene02::Init(CSceneInitArgs &args)
     this->m_planeMesh.Init();
 
     // Framebuffer
-    this->m_frameBuffer.Init();
+    this->m_frameBufferDepth.Init();
 }
 
 void CScene02::SetGlStates()
@@ -99,7 +99,7 @@ void CScene02::Render(CSceneUpdateArgs &args)
     m_simpleDepthShader.Use();
     m_simpleDepthShader.SetMat4("lightSpaceMatrix", lightSpaceMatrix);
 
-    this->m_frameBuffer.Bind();    
+    this->m_frameBufferDepth.Bind();    
     this->RenderCommon(args, m_simpleDepthShader);
 
     // torus
@@ -110,9 +110,9 @@ void CScene02::Render(CSceneUpdateArgs &args)
     torusModel = glm::scale(torusModel, glm::vec3(1.5f));
 
     this->m_simpleDepthShader.SetMat4("model", torusModel);
-    this->m_importMorphMesh.Render();
+    this->m_importMesh1.Render();
 
-    this->m_frameBuffer.Unbind();    
+    this->m_frameBufferDepth.Unbind();    
 
     // reset viewport
     glViewport(0, 0, this->GetScreenWidth(), this->GetScreenHeight());
@@ -132,7 +132,7 @@ void CScene02::Render(CSceneUpdateArgs &args)
     m_shader.SetVec3("lightPos", m_lightPos);
     m_shader.SetMat4("lightSpaceMatrix", lightSpaceMatrix);
     
-    this->m_frameBuffer.Show();
+    this->m_frameBufferDepth.Show();
 
     this->RenderCommon(args, m_shader);
 
@@ -146,21 +146,21 @@ void CScene02::Render(CSceneUpdateArgs &args)
     glBindTexture(GL_TEXTURE_CUBE_MAP, this->m_texCubeMap.ID);
 
     this->m_shaderCubeMapReflect.SetMat4("model", torusModel);
-    this->m_importMorphMesh.Render();    
+    this->m_importMesh1.Render();    
 }
 
 void CScene02::Update(CSceneUpdateArgs &args)
 {
-    this->WaveFuncObject(this->m_importMorphMesh, args.GetCurrentFrame());
+    this->WaveFuncObject(this->m_importMesh2, args.GetCurrentFrame());
     m_camUtil.PathInterpolate(args.GetDeltaTime()); 
 }
 
 void CScene02::Release()
 {
     this->m_planeMesh.Release();
-    this->m_frameBuffer.Release();
-    this->m_importMesh.Release();
-    this->m_importMorphMesh.Release();
+    this->m_frameBufferDepth.Release();
+    this->m_importMesh1.Release();
+    this->m_importMesh2.Release();
 }
 
 void CScene02::RenderCommon(CSceneUpdateArgs &args, const CShader &shader)
@@ -186,7 +186,7 @@ void CScene02::RenderCommon(CSceneUpdateArgs &args, const CShader &shader)
     shader.SetMat4("model", model);
 
     this->m_texRed.Activate();
-    this->m_importMesh.Render();
+    this->m_importMesh2.Render();
     this->m_texRed.UnBind();
 }
 

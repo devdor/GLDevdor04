@@ -10,7 +10,7 @@
 #include "scene_update_args.hpp"
 #include "particle_emitter.hpp"
 #include "metaballs_util.hpp"
-#include "frame_buffer.hpp"
+#include "frame_buffer_depth.hpp"
 
 class CScene01 : public CBaseScene
 {
@@ -31,7 +31,7 @@ private:
     CShader m_shader, m_simpleDepthShader, m_shaderCubeMapReflect;
     
     // framebuffer
-    CFrameBuffer m_frameBuffer;
+    CFrameBufferDepth m_frameBufferDepth;
 
     // lights
     glm::vec3 m_lightPos;
