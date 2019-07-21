@@ -5,9 +5,7 @@
 
 class CFrameBufferTexture
 {
-public:
-	CFrameBufferTexture();
-		
+public:		
 	void Generate(GLuint width, GLuint height)
 	{
 		this->Generate(width, height, false);

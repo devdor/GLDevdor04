@@ -12,6 +12,7 @@
 #include "metaballs_util.hpp"
 #include "frame_buffer_depth.hpp"
 #include "frame_buffer_tex.hpp"
+#include "screen_plane.hpp"
 
 class CScene02 : public CBaseScene
 {
@@ -30,7 +31,7 @@ private:
     void WaveFuncObject(CImportMesh &mesh, const float curFrame);
 
     // shader
-    CShader m_shader, m_simpleDepthShader, m_shaderCubeMapReflect;
+    CShader m_shader, m_simpleDepthShader, m_shaderCubeMapReflect, m_shaderPlasma;
     
     // framebuffer
     CFrameBufferDepth m_frameBufferDepth;
@@ -40,10 +41,15 @@ private:
     
     // meshes
     CPlaneMesh m_planeMesh;
+    CCubeMesh m_cubeMesh;
     CImportMesh m_importMesh1, m_importMesh2;
 
     // textures
     CTexture2D m_texFloor, m_texRed;
     CTextureCubeMap m_texCubeMap;
+
+    // offscreen
+    CScreenPlane m_planeOffscreen;
+	CFrameBufferTexture m_texOffscreen;
 };
 #endif

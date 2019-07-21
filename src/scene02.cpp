@@ -22,10 +22,10 @@ void CScene02::Init(CSceneInitArgs &args)
 
     // meshes
     this->m_importMesh1.Init(
-        CFileSystem::GetPath("res/meshes/torus01.obj").c_str());
+        CFileSystem::GetPath("res/meshes/torus01.obj"));
 
     this->m_importMesh2.Init(
-        CFileSystem::GetPath("res/meshes/torus01.obj").c_str());
+        CFileSystem::GetPath("res/meshes/torus01.obj"));
 
     CSceneUpdateArgs updArgs = CSceneUpdateArgs(0,0,0);
 
@@ -41,6 +41,10 @@ void CScene02::Init(CSceneInitArgs &args)
     this->m_simpleDepthShader.Init(
         CFileSystem::GetPath("res/shaders/shadow_mapping_depth.vs").c_str(),
         CFileSystem::GetPath("res/shaders/shadow_mapping_depth.fs").c_str());    
+
+    m_shaderPlasma.Init(
+        CFileSystem::GetPath("res/shaders/plasma.vs").c_str(),
+        CFileSystem::GetPath("res/shaders/plasma.fs").c_str());    
 
     // load textures
     this->m_texRed = CUtil::LoadTextureFromFile(
@@ -63,8 +67,13 @@ void CScene02::Init(CSceneInitArgs &args)
     // meshes
     this->m_planeMesh.Init();
 
-    // Framebuffer
+    // framebuffer
     this->m_frameBufferDepth.Init();
+
+    // offscreen
+    this->m_planeOffscreen = CScreenPlane();
+	this->m_planeOffscreen.Init(1.0f);
+	this->m_texOffscreen.Generate(this->GetScreenWidth(), this->GetScreenHeight());
 }
 
 void CScene02::SetGlStates()
