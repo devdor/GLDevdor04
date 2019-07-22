@@ -21,7 +21,7 @@ void CScene01::Init(CSceneInitArgs &args)
 
     // meshes
     this->m_importMesh.Init(
-        CFileSystem::GetPath("res/meshes/mesh01.obj").c_str());
+        CFileSystem::GetPath("res/meshes/mesh01.obj_").c_str());
 
     // metaballs
     this->m_metaBallsUtil.Init();

@@ -22,10 +22,10 @@ void CScene02::Init(CSceneInitArgs &args)
 
     // meshes
     this->m_importMesh1.Init(
-        CFileSystem::GetPath("res/meshes/torus01.obj"));
+        CFileSystem::GetPath("res/meshes/torus01.obj_"));
 
     this->m_importMesh2.Init(
-        CFileSystem::GetPath("res/meshes/torus01.obj"));
+        CFileSystem::GetPath("res/meshes/torus01.obj_"));
 
     CSceneUpdateArgs updArgs = CSceneUpdateArgs(0,0,0);
 
