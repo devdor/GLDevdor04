@@ -11,8 +11,6 @@
 #include "particle_emitter.hpp"
 #include "metaballs_util.hpp"
 #include "frame_buffer_depth.hpp"
-#include "frame_buffer_tex.hpp"
-#include "screen_plane.hpp"
 
 class CScene02 : public CBaseScene
 {
@@ -47,9 +45,5 @@ private:
     // textures
     CTexture2D m_texFloor, m_texRed;
     CTextureCubeMap m_texCubeMap;
-
-    // offscreen
-    CScreenPlane m_planeOffscreen;
-	CFrameBufferTexture m_texOffscreen;
 };
 #endif

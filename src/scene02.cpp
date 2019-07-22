@@ -69,11 +69,6 @@ void CScene02::Init(CSceneInitArgs &args)
 
     // framebuffer
     this->m_frameBufferDepth.Init();
-
-    // offscreen
-    this->m_planeOffscreen = CScreenPlane();
-	this->m_planeOffscreen.Init(1.0f);
-	this->m_texOffscreen.Generate(this->GetScreenWidth(), this->GetScreenHeight());
 }
 
 void CScene02::SetGlStates()

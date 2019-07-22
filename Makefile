@@ -44,8 +44,7 @@ $(OBJDIR_DEBUG)/src/camera_util.o $(OBJDIR_DEBUG)/src/camera.o \
 $(OBJDIR_DEBUG)/src/base_scene.o $(OBJDIR_DEBUG)/src/scene01.o $(OBJDIR_DEBUG)/src/scene02.o \
 $(OBJDIR_DEBUG)/src/text_layer.o $(OBJDIR_DEBUG)/src/wave_func.o $(OBJDIR_DEBUG)/src/texture_base.o \
 $(OBJDIR_DEBUG)/src/texture2d.o $(OBJDIR_DEBUG)/src/texture_cube_map.o \
-$(OBJDIR_DEBUG)/src/particle_emitter.o \
-$(OBJDIR_DEBUG)/src/screen_plane.o
+$(OBJDIR_DEBUG)/src/particle_emitter.o
 
 OBJ_RELEASE = $(OBJDIR_RELEASE)/src/glad.o $(OBJDIR_RELEASE)/src/util.o $(OBJDIR_RELEASE)/src/main.o \
 $(OBJDIR_RELEASE)/src/spline3d/splinegl.o $(OBJDIR_RELEASE)/src/spline3d/interpol_spline.o \
@@ -56,8 +55,7 @@ $(OBJDIR_RELEASE)/src/camera_util.o $(OBJDIR_RELEASE)/src/camera.o \
 $(OBJDIR_RELEASE)/src/base_scene.o $(OBJDIR_RELEASE)/src/scene01.o $(OBJDIR_RELEASE)/src/scene02.o \
 $(OBJDIR_RELEASE)/src/text_layer.o $(OBJDIR_RELEASE)/src/wave_func.o $(OBJDIR_RELEASE)/src/texture_base.o \
 $(OBJDIR_RELEASE)/src/texture2d.o $(OBJDIR_RELEASE)/src/texture_cube_map.o \
-$(OBJDIR_RELEASE)/src/particle_emitter.o \
-$(OBJDIR_RELEASE)/src/screen_plane.o
+$(OBJDIR_RELEASE)/src/particle_emitter.o
 
 all: debug release
 
@@ -132,9 +130,6 @@ $(OBJDIR_DEBUG)/src/base_scene.o: src/base_scene.cpp
 
 $(OBJDIR_DEBUG)/src/particle_emitter.o: src/particle_emitter.cpp
 	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/particle_emitter.cpp -o $(OBJDIR_DEBUG)/src/particle_emitter.o
-
-$(OBJDIR_DEBUG)/src/screen_plane.o: src/screen_plane.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/screen_plane.cpp -o $(OBJDIR_DEBUG)/src/screen_plane.o
 
 $(OBJDIR_DEBUG)/src/scene01.o: src/scene01.cpp
 	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/scene01.cpp -o $(OBJDIR_DEBUG)/src/scene01.o
@@ -218,9 +213,6 @@ $(OBJDIR_RELEASE)/src/base_scene.o: src/base_scene.cpp
 
 $(OBJDIR_RELEASE)/src/particle_emitter.o: src/particle_emitter.cpp
 	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/particle_emitter.cpp -o $(OBJDIR_RELEASE)/src/particle_emitter.o
-
-$(OBJDIR_RELEASE)/src/screen_plane.o: src/screen_plane.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/screen_plane.cpp -o $(OBJDIR_RELEASE)/src/screen_plane.o
 
 $(OBJDIR_RELEASE)/src/scene01.o: src/scene01.cpp
 	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/scene01.cpp -o $(OBJDIR_RELEASE)/src/scene01.o
